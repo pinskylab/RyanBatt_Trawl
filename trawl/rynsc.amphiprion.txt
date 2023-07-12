@@ -1,0 +1,112 @@
+#!/bin/bash
+
+# =========================
+# = Push All Schoool&Work =
+# =========================
+cd "/Users/Battrd/Documents"
+rsync -aznuP "./School&Work" ryanb@amphiprion.deenr.rutgers.edu:~/Documents/
+
+
+# ========================
+# = Pull All School&Work =
+# ========================
+cd ~
+rsync -aznuP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work' "./Documents/"
+
+
+# ==============================================
+# = Delete All Remote School&Work if not Local =
+# ==============================================
+cd ./Documents
+echo "Deleting files on amphiprion if they don't exist locally"
+rsync -anuP --delete "./School&Work" ryanb@amphiprion.deenr.rutgers.edu:~/Documents/
+# rsync -anP --delete "./School&Work" ryanb@amphiprion.deenr.rutgers.edu:~/Documents/
+
+# ==================
+# = Script Downloads =
+# ==================
+# Download All Data
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Scripts/Analysis/diversity/richness.cov.Rout' "./Scripts/Analysis/diversity"
+
+
+
+# ==================
+# = Data Downloads =
+# ==================
+# Download All Data
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Data/' "./Data/"
+
+
+# Download the basic.dat.RData file from amphiprion
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Data/MSOM/basic.dat.RData' "./Data/"
+
+# Download the cov.dat.RData file from amphiprion
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Data/MSOM/cov.dat.RData' "./Data/MSOM/"
+
+# Download the cov.dat.RData file from amphiprion
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Data/MSOM/prepd.msom.cov.RData' "./Data/MSOM/"
+
+
+# Download the cov.dat.prec.RData file from amphiprion
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Data/MSOM/cov.dat.prec.RData' "./Data/MSOM/"
+
+# Download the trawl.RData file
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -aznuP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Data/trawl.RData' "./Data/"
+
+
+# =====================
+# = Results Downloads =
+# =====================
+# Download All Results
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Results/' "./Results/"
+
+
+# Download intermediate summary statistics from richness.cov.R/ rich.cov.R
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Results/Richness/msomCov/msomCov.smry/' "./Results/Richness/msomCov/msomCov.smry/"
+
+
+# Download the richness.basic.out file
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Results/Richness/richness.basic.out.RData' "./Results/Richness/"
+
+
+# Download the last.out file
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Results/Richness/last.out.RData' "./Results/Richness/"
+
+
+# Download the rbo.RData file
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Results/Richness/rbo.RData' "./Results/Richness/"
+
+
+
+# ====================
+# = Figure Downloads =
+# ====================
+# Download All Figures
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Figures/' "./Figures/"
+
+# Download a quick test figure
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Figures/first.out_test_basicRich_sppProb_avgOverStrata.pdf' "./Figures/"
+
+# Download coverType figure
+cd "/Users/Battrd/Documents/School&Work/pinskyPost/trawl/"
+
+rsync -azunP ryanb@amphiprion.deenr.rutgers.edu:'~/Documents/School\&Work/pinskyPost/trawl/Figures/coverType.pdf' "./Figures/"
+
+
+
+
+

@@ -1,0 +1,2428 @@
+
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> # ================
+> # = JAGS Options =
+> # ================
+> nChains <- 3
+> nIter <- 4E3
+> n0s <- 5E2
+> nThin <- 60 # max(1, floor((nIter - floor(nIter/2)) / 1000))
+> 
+> 
+> # =================
+> # = Load packages =
+> # =================
+> library(rfishbase)
+> library(taxize)
+> library(plyr)
+> library(reshape)
+
+Attaching package: ‘reshape’
+
+The following objects are masked from ‘package:plyr’:
+
+    rename, round_any
+
+> library(reshape2)
+
+Attaching package: ‘reshape2’
+
+The following objects are masked from ‘package:reshape’:
+
+    colsplit, melt, recast
+
+> library(data.table)
+> library(R2jags)
+Loading required package: rjags
+Loading required package: coda
+Loading required package: lattice
+Linked to JAGS 3.4.0
+Loaded modules: basemod,bugs
+
+Attaching package: ‘R2jags’
+
+The following object is masked from ‘package:coda’:
+
+    traceplot
+
+> library(doParallel)
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+> 
+> 
+> # ===============================
+> # = Guess appropriate directory =
+> # ===============================
+> if(Sys.info()["sysname"]=="Linux"){
++ 	setwd("~/Documents/School&Work/pinskyPost")
++ }else{
++ 	setwd("~/Documents/School&Work/pinskyPost")
++ }
+> 
+> 
+> # ==================
+> # = Load Functions =
+> # ==================
+> data.location <- "./trawl/Scripts/DataFunctions"
+> invisible(sapply(paste(data.location, list.files(data.location), sep="/"), source, .GlobalEnv))
+> 
+> stat.location <- "./trawl/Scripts/StatFunctions"
+> invisible(sapply(paste(stat.location, list.files(stat.location), sep="/"), source, .GlobalEnv))
+> 
+> plot.location <- "./trawl/Scripts/PlotFunctions"
+> invisible(sapply(paste(plot.location, list.files(plot.location), sep="/"), source, .GlobalEnv))
+> 
+> 
+> # ======================
+> # = Load MSOM Data set =
+> # ======================
+> load("./trawl/Data/MSOM/prepd.msom.cov.RData")
+> # load("./trawl/Data/MSOM/cov.dat.RData")
+> # load("./trawl/Data/MSOM/cov.dat.prec.RData")
+> # load("./trawl/Data/trawl2.RData") # needed so that I know where the original NA's are
+> 
+> 
+> # =====================================
+> # = Set cores for parallel processing =
+> # =====================================
+> if(Sys.info()["sysname"]=="Windows"){
++ 	nC <- floor(detectCores()*0.75)
++ 	registerDoParallel(cores=nC)
++ }else if(Sys.info()["sysname"]=="Linux"){
++ 	# registerDoParallel(cores=min(c(25,floor(detectCores()*0.75))))
++ 	registerDoParallel(floor(detectCores()*0.60))
++ 	# registerDoParallel(floor(detectCores()*0.90))
++ }else{
++ 	registerDoParallel()
++ }
+> 
+> 
+> # =========================
+> # = Run Bayesian Richness =
+> # =========================
+> 
+> 
+> # Run all other Bayesian richness in parallel
+> richness.cov.out <- foreach(i=(1:length(prepd.cov.dat))) %dopar%{ # run all other subsets in parallel
++ 	rich.cov(
++ 		data=prepd.cov.dat[[i]], 
++ 		covs=list(prepd.cov1[[i]],prepd.cov2[[i]]), 
++ 		cov.precs=list(prepd.cov1.prec[[i]], prepd.cov2.prec[[i]]), 
++ 		nameID=paste(prepd.cov.names[i], collapse="_"),
++ 		nzeroes=n0s, 
++ 		nChains=nChains, 
++ 		nIter=nIter, 
++ 		nThin=nThin
++ 	) # do analysis for this subset
++ }
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+module glm loaded
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 528352
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 490553
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 517110
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 526310
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 501784
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 514047
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 513015
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 495647
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 536520
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 524268
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 523247
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1024027
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 948145
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 979044
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1042747
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 996839
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1003424
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1019347
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 989362
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1005274
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1021219
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 989362
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1011859
+
+Initializing model
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1031515
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1027771
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1034323
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1030579
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1037131
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1049299
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1032451
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1032451
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1037131
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1039939
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1049299
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1048363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1025899
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1040875
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1036195
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1038067
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 264038
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 204164
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1043683
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1024027
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 208458
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 275786
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 289670
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1039939
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 287534
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 292874
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 237316
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 288602
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 276854
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1038067
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 305690
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 277922
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 282194
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 285398
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1275540
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1224477
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 292874
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1256262
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 287534
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 886325
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 262948
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 273639
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 462122
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 275775
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 283262
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 287534
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1206344
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 416180
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 289670
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 289670
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1174570
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 436691
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 288602
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1242654
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 447362
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 285398
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 266174
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 291806
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 274718
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 458022
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 404689
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 290738
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1209724
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 257619
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 278990
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 415371
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 458842
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 433411
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 385807
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 421111
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 826943
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1214293
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 416191
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 449002
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1255128
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 449822
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 444082
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 448182
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1207456
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 458022
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1189345
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 457202
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 430940
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 419460
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 449002
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 266163
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 439982
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 446542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 886496
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 442431
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 456382
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 430951
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 907591
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 441622
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 455562
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 1241509
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 447362
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 440791
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 908344
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 436691
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 475242
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 912862
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 857085
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 448171
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 875954
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 119898
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132157
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 885743
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 460482
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 451462
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 906849
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 131362
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 298763
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 129772
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 100746
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 100746
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 933957
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 820919
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 119898
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 792305
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 91148
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 435051
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 120962
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 123090
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 303552
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 320363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 439971
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 295552
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 452282
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 297952
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 915885
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 117238
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 444902
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 449822
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 312363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 328363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 451462
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 304352
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 247405
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 853342
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132952
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 452282
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 131362
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 321163
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132157
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 101278
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 136927
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 318763
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 96479
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 295774
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 440802
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 123090
+
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 136927
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 119366
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 101278
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 100746
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 99682
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 293038
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 93287
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 107130
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 453922
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 302752
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 301963
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 430962
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 119898
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 844306
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 118834
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 285952
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 116174
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 110322
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 121494
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 133747
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 305952
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 283006
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 894779
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 118834
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 304363
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 257448
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 301963
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 281930
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 122026
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 304352
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132952
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 319563
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132157
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 317963
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 310752
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 312363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 407524
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 462122
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 98075
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 134542
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 320363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 102342
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 297941
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 90084
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 131362
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 325963
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 313152
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 460247
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 306763
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 120430
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 293950
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 136132
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 119366
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 305163
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 450667
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 99150
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 106598
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 131362
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 317963
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 119898
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 254712
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132952
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 446835
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 285742
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 121494
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 452583
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 211804
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 285141
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 451625
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 278741
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 94883
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 309963
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 313152
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 105534
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 309952
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 122558
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 132157
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 109258
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 314763
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 447793
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 102874
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 319563
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 316352
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 325163
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 309963
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 121494
+
+Initializing model
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 452583
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 325963
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 320363
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 283439
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 254701
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 452583
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 419989
+
+Initializing model
+
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+[1] "/local/home/ryanb/Documents/School&Work/pinskyPost"
+> # print(getwd())
+> 
+> # ===============
+> # = Save Output =
+> # ===============
+> save(richness.cov.out, file="./trawl/Results/Richness/richness.cov.out.RData")
+> 
+> 
+> 
+> 
+> 
+> # ============================
+> # = Testing – taking forever =
+> # ============================
+> # i=1
+> # rich.cov(
+> # 	data=prepd.cov.dat[[i]],
+> # 	covs=list(prepd.cov1[[i]],prepd.cov2[[i]]),
+> # 	cov.precs=list(prepd.cov1.prec[[i]], prepd.cov2.prec[[i]]),
+> # 	nameID="test1_i1_chains3_iter4k_thin50", #paste(prepd.cov.names[i], collapse="_"),
+> # 	nzeroes=n0s,
+> # 	nChains=nChains,
+> # 	nIter=nIter,
+> # 	nThin=nThin
+> # ) # do analysis for this subset
+> 
+> 
+> 
+> # i=2
+> # nChains <- 3
+> # nIter <- 1E3
+> # n0s <- 5E2
+> # nThin <- 5
+> # system.time({
+> # 	test2 <- rich.cov(
+> # 		data=prepd.cov.dat[[i]],
+> # 		covs=list(prepd.cov1[[i]],prepd.cov2[[i]]),
+> # 		cov.precs=list(prepd.cov1.prec[[i]], prepd.cov2.prec[[i]]),
+> # 		nameID="test2_i2_chains3_iter1k_thin5", #paste(prepd.cov.names[i], collapse="_"),
+> # 		nzeroes=n0s,
+> # 		nChains=nChains,
+> # 		nIter=nIter,
+> # 		nThin=nThin
+> # 	)
+> # })
+> 
+> 
+> # i=2
+> # nChains <- 3
+> # nIter <- 1E3
+> # n0s <- 5E2
+> # nThin <- 5
+> # system.time({
+> # 	test3 <- rich.cov(
+> # 		data=prepd.cov.dat[[i]],
+> # 		covs=list(scale(prepd.cov1[[i]])[,1],scale(prepd.cov2[[i]])[,1]),
+> # 		cov.precs=list(prepd.cov1.prec[[i]]*var(prepd.cov1[[i]],na.rm=TRUE), prepd.cov2.prec[[i]]*var(prepd.cov2[[i]],na.rm=TRUE)),
+> # 		nameID="test3_i2_chains3_iter1k_thin5_scaled", #paste(prepd.cov.names[i], collapse="_"),
+> # 		nzeroes=n0s,
+> # 		nChains=nChains,
+> # 		nIter=nIter,
+> # 		nThin=nThin
+> # 	)
+> # })
+> 
+> proc.time()
+       user      system     elapsed 
+2567302.835    1914.915  125938.139 

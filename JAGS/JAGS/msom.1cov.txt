@@ -1,0 +1,103 @@
+
+model{
+
+	#Define prior distributions for community-level model parameters
+	omega ~ dunif(0,1)
+	
+	a0.u.mean ~ dunif(0,1)
+	mu.u.a0 <- log(a0.u.mean) - log(1-a0.u.mean)
+	
+	a0.v.mean ~ dunif(0,1)
+	mu.v.a0 <- log(a0.v.mean) - log(1-a0.v.mean)
+
+	mua3 ~ dnorm(0, 0.001)
+	mua4 ~ dnorm(0, 0.001)
+	
+	tau.v.a0 ~ dgamma(0.1,0.1)
+	tau.u.a0 ~ dgamma(0.1,0.1)
+
+	tau.a3 ~ dgamma(0.1,0.1)
+	tau.a4 ~ dgamma(0.1,0.1)
+
+	
+	# Set up covariates as stochastic nodes (handles missings)
+	# for (j in 1:J) {
+	# 	# temp[j] ~ dnorm(temp.mu[j], temp.prec[j])
+	# 	depth[j] ~ dnorm(depth.mu[j], depth.prec[j])
+	# }
+
+	for (i in 1:(n+nzeroes)) {
+
+		#Create priors for species i from the community level prior distributions
+		w[i] ~ dbern(omega)
+		u.a0[i] ~ dnorm(mu.u.a0, tau.u.a0) 
+		v.a0[i] ~ dnorm(mu.v.a0, tau.v.a0) 
+
+		a3[i] ~ dnorm(mua3, tau.a3)
+		a4[i] ~ dnorm(mua4, tau.a4)
+		
+		logit(p[i]) <- v.a0[i] # moved out of k loop (not sure if right?)
+		
+
+		#Create a loop to estimate the Z matrix (true occurrence for species i 
+		#at point j.      
+		for (j in 1:J) {
+			logit(psi[j,i]) <- u.a0[i] + a3[i]*cov1[j] + a4[i]*cov1[j]^2
+
+			mu.psi[j,i] <- psi[j,i]*w[i]
+			Z[j,i] ~ dbern(mu.psi[j,i])
+			
+			mu.p[j,i] <- p[i]*Z[j,i] # moved out of k loop (not sure if right?)
+
+			#Create a loop to estimate detection for species i at point k during 
+			#sampling period k.      
+			for (k in 1:K[j]) {  
+			# for(k in k.OK[j,1:nK[j]]){
+				# logit(p[j,k,i]) <- v.a0[i]
+				# mu.p[j,k,i] <- p[j,k,i]*Z[j,i]
+				X[j,k,i] ~ dbern(mu.p[j,i])
+			} # end i 
+		} # end j
+	} # end i
+	
+	
+	# Add 0's (or w/e value) for substrata that weren't visited
+	# Allows these other variables to be monitored, if so desired
+	# http://sourceforge.net/p/mcmc-jags/discussion/610037/thread/ac5faa5d/
+	# really freaking hard to do without using if(){}. Could do it if never had full k sampled,
+	# or if I was willing to addon a bonus K that was always empty (:p)
+	# I'd have to index 1 past the current nK, which if nK == n.ss, then I'd go out of bounds,
+	# which would defeat the purpose (JAGS would pad out the dimensions, and unless all j had full k [which would obviate the need to go through all this trouble], I'd be back where i started)
+	# IDK, maybe there's a way to do this by specifying inital values
+	# for(j in 1:J){
+# 		J2[j] <- K[j] < maxK
+# 	}
+# 	J3 <- (1:J)[J2]
+# 	for(i in 1:(n+nzeroes)){
+# 		for(j in J3){
+# 			for(k in K[j]:maxK){
+# 				p[j,k,i] <- 0
+# 				# mu.p[j,k,i] <- 0
+# 				# X[j,k,i] <- 0
+#
+# 			}
+# 		}
+# 	}
+	
+
+
+	#Sum all species observed (n) and unobserved species (n0) to find the 
+	#total estimated richness
+	# n0 <- sum(w[(n+1):(n+nzeroes)])
+	# N <- n + n0
+
+
+	#Create a loop to determine point level richness estimates for the 
+	#whole community and for subsets or assemblages of interest.
+	# for(j in 1:J){
+	# 	Nsite[j]<- inprod(Z[j,1:(n+nzeroes)],w[1:(n+nzeroes)])
+	# # 	# Nground[j]<- inprod(Z[j,1:n],ground[1:n])
+	# # 	# Nmid[j]<- inprod(Z[j,1:n],mid[1:n])
+	# }
+
+}

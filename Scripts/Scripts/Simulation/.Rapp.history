@@ -1,0 +1,24 @@
+if(Sys.info()["sysname"]=="Linux"){#
+	setwd("~/Documents/School&Work/pinskyPost/trawl/Scripts/Simulation")#
+}else{#
+	setwd("~/Documents/School&Work/pinskyPost/trawl/Scripts/Simulation")#
+}
+load("../../Results/Simulation/sim.basic.RData")
+X.slope
+X.slope = 0
+grid.X
+env
+rmarkdown::render(#
+	"~/Documents/School&Work/pinskyPost/trawl/Scripts/Simulation/assess.sim.basic.R",#
+	output_format=o_f,#
+	output_dir='~/Documents/School&Work/pinskyPost/trawl/Reports/assess.sim.basic/',#
+)
+o_f
+o_f <- c("html_document", "pdf_document")[1]
+o_f <- c("html_document", "pdf_document")[2]
+o_f <- c("html_document", "pdf_document")[2]
+rmarkdown::render(#
+	"~/Documents/School&Work/pinskyPost/trawl/Scripts/Simulation/assess.sim.basic.R",#
+	output_format=o_f,#
+	output_dir='~/Documents/School&Work/pinskyPost/trawl/Reports/assess.sim.basic/',#
+)
