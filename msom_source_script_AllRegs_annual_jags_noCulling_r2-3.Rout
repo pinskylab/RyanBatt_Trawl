@@ -1,0 +1,479 @@
+WARNING: unknown option '-cwd'
+
+
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> # run on amphiprion: 
+> # nohup R CMD BATCH -cwd --no-save trawlDiversity/pkgBuild/test/msom_source_script.R &
+> 
+> # nohup R CMD BATCH -cwd --no-save trawlDiversity/pkgBuild/test/msom_source_script.R msom_source_script_AllRegs_annual_jags_noCulling_r2-3.Rout &
+> 
+> 
+> # amphiprion process id's
+> # ebs: 2616
+> # ai & goa: 
+> # wctri & wcann: 
+> # gmex & sa:
+> # neus:
+> # shelf & newf:
+> 
+> 
+> 
+> # ========
+> # = Load =
+> # ========
+> library("trawlDiversity")
+Loading required package: data.table
+Loading required package: trawlData
+> library("raster")
+Loading required package: sp
+> library("sp")
+> library("rstan")
+Loading required package: ggplot2
+rstan (Version 2.9.0, packaged: 2016-01-05 16:17:47 UTC, GitRev: 05c3d0058b6a)
+For execution on a local, multicore CPU with excess RAM we recommend calling
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+
+Attaching package: ‘rstan’
+
+The following object is masked from ‘package:raster’:
+
+    extract
+
+> library("R2jags")
+Loading required package: rjags
+Loading required package: coda
+
+Attaching package: ‘coda’
+
+The following object is masked from ‘package:rstan’:
+
+    traceplot
+
+Linked to JAGS 3.4.0
+Loaded modules: basemod,bugs
+
+Attaching package: ‘R2jags’
+
+The following object is masked from ‘package:coda’:
+
+    traceplot
+
+The following object is masked from ‘package:rstan’:
+
+    traceplot
+
+> 
+> Sys.time()
+[1] "2016-04-04 22:31:07 EDT"
+> sessionInfo()
+R version 3.2.3 (2015-12-10)
+Platform: x86_64-redhat-linux-gnu (64-bit)
+Running under: CentOS release 6.7 (Final)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] R2jags_0.5-7         rjags_3-15           coda_0.18-1         
+ [4] rstan_2.9.0          ggplot2_2.0.0        raster_2.4-30       
+ [7] sp_1.2-1             trawlDiversity_0.3.0 trawlData_0.3.2     
+[10] data.table_1.9.4    
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.2      magrittr_1.5     munsell_0.4.2    colorspace_1.2-6
+ [5] lattice_0.20-33  stringr_1.0.0    plyr_1.8.3       tools_3.2.3     
+ [9] parallel_3.2.3   grid_3.2.3       gtable_0.1.2     R2WinBUGS_2.1-21
+[13] abind_1.4-3      gridExtra_2.0.0  reshape2_1.4.1   rbLib_0.0.4     
+[17] numbers_0.6-1    inline_0.3.14    stringi_1.0-1    ssh.utils_1.0   
+[21] scales_0.3.0     boot_1.3-17      stats4_3.2.3     chron_2.3-47    
+> 
+> 
+> # ===========
+> # = Options =
+> # ===========
+> lang_used <- c("JAGS", "Stan")[1]
+> 
+> reg_n0_pad <- c(
++ 	"ebs" = 50,
++ 	"ai" = 50,
++ 	"goa" = 50,
++ 	"wctri" = 50,
++ 	"wcann" = 50,
++ 	"gmex" = 50,
++ 	"sa" = 50,
++ 	"neus" = 50,
++ 	"shelf" = 50,
++ 	"newf" = 50
++ )
+> 
+> reg_iter <- c(
++ 	"ebs" = 12E3,
++ 	"ai" = 12E3,
++ 	"goa" = 12E3,
++ 	"wctri" = 12E3, 
++ 	"wcann" = 12E3, 
++ 	"gmex" = 12E3, 
++ 	"sa" = 12E3, 
++ 	"neus" = 12E3, 
++ 	"shelf" = 12E3, 
++ 	"newf" = 12E3
++ )
+> 
+> 
+> # =========
+> # = Setup =
+> # =========
+> regs <- c("ebs", "ai", "goa", "wctri", "wcann", "gmex", "sa", "neus", "shelf", "newf")
+> 
+> 
+> if(lang_used=="Stan"){
++ 	stan_folder <- file.path(system.file(package="trawlDiversity"), tolower("Stan"))
++ 	model_location <- file.path(stan_folder, "msomStatic_norv_1yr.stan")
++ 	compiled_stan_model <- stan_model(model_location)
++ }else{
++ 	compiled_stan_model <- NULL
++ }
+> 
+> 
+> # =====================
+> # = Loop and Run MSOM =
+> # =====================
+> # for(r in 1:length(regs)){
+> # for(r in 1:1){ # ebs
+> for(r in 2:3){ # ai & goa
++ # for(r in 4:5){ # wctri & wcann
++ # for(r in 6:7){ # gmex & sa
++ # for(r in 8:8){ # neus
++ # for(r in 9:10){ # shelf and newf
++ 
++ 	rm_out <- vector("list", length(regs)) # yes, this reset the contents of the list. Saving all regions together is too big
++ 	
++ 	t_reg <- regs[r]
++ 	data_in_all <- data_all[reg==t_reg]
++ 	
++ 	u_yrs <- data_in_all[,unique(year)]
++ 	n_spp <- data_in_all[,list(n_spp=lu(spp)), by="year"]
++ 	
++ 	S <- data_in_all[,lu(spp)]
++ 	annual_n0 <- (S + reg_n0_pad[regs[r]]) - n_spp[,n_spp]
++ 	
++ 	rm_out[[r]] <- vector("list", length(u_yrs)) 
++ 	
++ 	for(i in 1:length(u_yrs)){
++ 		t_data <- data_in_all[year==u_yrs[i]]
++ 	
++ 		msg_reg <- toupper(t_data[,unique(reg)])
++ 		msg_yr_id <- paste0("Year = ",u_yrs[i])
++ 		msg_yr_cnt <-paste0("(", i, " of ", length(u_yrs), ")")
++ 		msg_progress <- paste(msg_reg, msg_yr_id, msg_yr_cnt)
++ 		cat(paste("\n\n\n", msg_progress, "\n"))
++ 		print(Sys.time())
++ 		
++ 	
++ 		rm_out[[r]][[i]] <- tryCatch(run_msom(
++ 			reg = t_reg,
++ 			regX.a1 = t_data,
++ 			params_out = c("params"),
++ 			language=lang_used, 
++ 			model_type = "Static", 
++ 			compiled_model = compiled_stan_model,
++ 			cores = 4, chains = 4,
++ 			test=FALSE, n0=annual_n0[i], iter=reg_iter[regs[r]], pre_save=FALSE, save_warmup=FALSE
++ 		), error=function(cond){message(paste("**Run failed for:", msg_progress));NA})
++ 		
++ 		rm_out[[r]][[i]]$info['year'] <- u_yrs[i]
++ 		
++ 		print(Sys.time())
++ 		cat("\n\n")
++ 		
++ 	}
++ 	
++ 	append_r <- paste0("_r", r, ".RData")
++ 	save_name <- gsub("\\.RData", append_r, rm_out[[r]][[1]][[3]]["save_path"])
++ 	save_name <- gsub("^\\./", "./trawlDiversity/pkgBuild/results/", save_name)
++ 	save_name <- gsub("[0-9]+(?=nZ)",reg_n0_pad[regs[r]],save_name, perl=TRUE)
++ 	save(rm_out, file=save_name, compress="xz")
++ 	
++ 	cat(paste0("\n\n\n\n\n",  paste(rep("=", 50), collapse=""), "\n\n\n"))
++ 	
++ }
+
+
+
+ AI Year = 1983 (1 of 12) 
+[1] "2016-04-04 22:31:11 EDT"
+[1] "2016-04-04 23:13:41 EDT"
+
+
+
+
+
+ AI Year = 1986 (2 of 12) 
+[1] "2016-04-04 23:13:41 EDT"
+[1] "2016-04-04 23:52:57 EDT"
+
+
+
+
+
+ AI Year = 1991 (3 of 12) 
+[1] "2016-04-04 23:52:57 EDT"
+[1] "2016-04-05 00:37:59 EDT"
+
+
+
+
+
+ AI Year = 1994 (4 of 12) 
+[1] "2016-04-05 00:37:59 EDT"
+[1] "2016-04-05 01:31:04 EDT"
+
+
+
+
+
+ AI Year = 1997 (5 of 12) 
+[1] "2016-04-05 01:31:04 EDT"
+[1] "2016-04-05 02:29:29 EDT"
+
+
+
+
+
+ AI Year = 2000 (6 of 12) 
+[1] "2016-04-05 02:29:29 EDT"
+[1] "2016-04-05 03:22:25 EDT"
+
+
+
+
+
+ AI Year = 2002 (7 of 12) 
+[1] "2016-04-05 03:22:25 EDT"
+[1] "2016-04-05 04:06:22 EDT"
+
+
+
+
+
+ AI Year = 2004 (8 of 12) 
+[1] "2016-04-05 04:06:22 EDT"
+[1] "2016-04-05 04:50:35 EDT"
+
+
+
+
+
+ AI Year = 2006 (9 of 12) 
+[1] "2016-04-05 04:50:35 EDT"
+[1] "2016-04-05 05:41:17 EDT"
+
+
+
+
+
+ AI Year = 2010 (10 of 12) 
+[1] "2016-04-05 05:41:17 EDT"
+[1] "2016-04-05 06:35:26 EDT"
+
+
+
+
+
+ AI Year = 2012 (11 of 12) 
+[1] "2016-04-05 06:35:26 EDT"
+[1] "2016-04-05 07:22:59 EDT"
+
+
+
+
+
+ AI Year = 2014 (12 of 12) 
+[1] "2016-04-05 07:22:59 EDT"
+[1] "2016-04-05 08:13:21 EDT"
+
+
+
+
+
+
+
+==================================================
+
+
+
+
+
+ GOA Year = 1984 (1 of 13) 
+[1] "2016-04-05 08:21:21 EDT"
+[1] "2016-04-05 10:33:28 EDT"
+
+
+
+
+
+ GOA Year = 1987 (2 of 13) 
+[1] "2016-04-05 10:33:28 EDT"
+[1] "2016-04-05 12:59:18 EDT"
+
+
+
+
+
+ GOA Year = 1990 (3 of 13) 
+[1] "2016-04-05 12:59:18 EDT"
+[1] "2016-04-05 15:12:51 EDT"
+
+
+
+
+
+ GOA Year = 1993 (4 of 13) 
+[1] "2016-04-05 15:12:51 EDT"
+[1] "2016-04-05 17:29:42 EDT"
+
+
+
+
+
+ GOA Year = 1996 (5 of 13) 
+[1] "2016-04-05 17:29:42 EDT"
+[1] "2016-04-05 19:34:06 EDT"
+
+
+
+
+
+ GOA Year = 1999 (6 of 13) 
+[1] "2016-04-05 19:34:06 EDT"
+[1] "2016-04-05 21:56:41 EDT"
+
+
+
+
+
+ GOA Year = 2001 (7 of 13) 
+[1] "2016-04-05 21:56:41 EDT"
+[1] "2016-04-05 23:58:58 EDT"
+
+
+
+
+
+ GOA Year = 2003 (8 of 13) 
+[1] "2016-04-05 23:58:58 EDT"
+[1] "2016-04-06 02:27:47 EDT"
+
+
+
+
+
+ GOA Year = 2005 (9 of 13) 
+[1] "2016-04-06 02:27:47 EDT"
+[1] "2016-04-06 04:44:42 EDT"
+
+
+
+
+
+ GOA Year = 2007 (10 of 13) 
+[1] "2016-04-06 04:44:42 EDT"
+[1] "2016-04-06 07:01:29 EDT"
+
+
+
+
+
+ GOA Year = 2009 (11 of 13) 
+[1] "2016-04-06 07:01:29 EDT"
+[1] "2016-04-06 09:23:02 EDT"
+
+
+
+
+
+ GOA Year = 2011 (12 of 13) 
+[1] "2016-04-06 09:23:02 EDT"
+[1] "2016-04-06 11:42:25 EDT"
+
+
+
+
+
+ GOA Year = 2013 (13 of 13) 
+[1] "2016-04-06 11:42:25 EDT"
+[1] "2016-04-06 13:58:17 EDT"
+
+
+
+
+
+
+
+==================================================
+
+
+> 
+> 
+> Sys.time()
+[1] "2016-04-06 14:17:32 EDT"
+> sessionInfo()
+R version 3.2.3 (2015-12-10)
+Platform: x86_64-redhat-linux-gnu (64-bit)
+Running under: CentOS release 6.7 (Final)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] R2jags_0.5-7         rjags_3-15           coda_0.18-1         
+ [4] rstan_2.9.0          ggplot2_2.0.0        raster_2.4-30       
+ [7] sp_1.2-1             trawlDiversity_0.3.1 trawlData_0.3.3     
+[10] data.table_1.9.4    
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.2      magrittr_1.5     munsell_0.4.2    colorspace_1.2-6
+ [5] lattice_0.20-33  stringr_1.0.0    plyr_1.8.3       tools_3.2.3     
+ [9] parallel_3.2.3   grid_3.2.3       gtable_0.1.2     R2WinBUGS_2.1-21
+[13] abind_1.4-3      gridExtra_2.0.0  reshape2_1.4.1   rbLib_0.0.4     
+[17] numbers_0.6-1    inline_0.3.14    stringi_1.0-1    ssh.utils_1.0   
+[21] scales_0.3.0     boot_1.3-17      stats4_3.2.3     chron_2.3-47    
+> 
+> proc.time()
+      user     system    elapsed 
+  2090.047    535.889 143188.220 
